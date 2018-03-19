@@ -1,0 +1,8 @@
+recordId2	number12	98.88
+recordId3	number12	98.43
+recordId4	number12	98.30
+recordId5	number12	97.96
+recordId6	number12	96.55
+recordId7	number12	96.49
+recordId8	number12	96.47
+recordId9	number12	96.29

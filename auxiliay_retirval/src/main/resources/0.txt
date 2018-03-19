@@ -1,0 +1,1 @@
+recordId10	number12	99.05

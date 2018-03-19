@@ -1,0 +1,236 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+/**
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<configuration>
+	<property>
+		<name>hbase.rootdir</name>
+		<value>hdfs://mycluster/hbase</value>
+		<description>The directory shared byRegionServers.（可以配hdfs路径也可以配置本地文件路径）
+		</description>
+	</property>
+	<property>
+		<name>hbase.cluster.distributed</name>
+		<value>true</value>
+		<description>The mode the clusterwill be in. Possible values are  false: standalone and pseudo-distributedsetups with managed Zookeeper true: fully-distributed with unmanagedZookeeper Quorum (see hbase-env.sh) </description>
+	</property>
+	<property>
+		<name>hbase.zookeeper.property.clientPort</name>
+		<value>2181</value>
+		<description>Property fromZooKeeper's config zoo.cfg.  
+		The port at which the clients willconnect.  
+		</description>
+	</property>
+	<property>
+		<name>hbase.zookeeper.quorum</name>
+		<value>node10,node210,node100</value>
+		<description>
+		Zookeeper节点Comma separated listof servers in the ZooKeeper Quorum.  
+		For example,"host1.mydomain.com,host2.mydomain.com,host3.mydomain.com".  
+		By default this is set to localhost forlocal and pseudo-distributed modes  
+		of operation. For a fully-distributedsetup, this should be set to a full  
+		list of ZooKeeper quorum servers. IfHBASE_MANAGES_ZK is set in hbase-env.sh  
+		this is the list of servers which we willstart/stop ZooKeeper on.  
+		</description>
+	</property>
+	<!-- 数据备份因子  -->
+	<property>
+		<name>dfs.replication</name>
+		<value>3</value>
+	</property>
+	<property>
+		<name>hbase.zookeeper.property.dataDir</name>
+		<value>/home/bigdata/poseidon_1.5.1/compenents/zookeeper-3.4.9/conf</value>
+		<description>
+		存放zoo.cfg的路径Property fromZooKeeper's config zoo.cfg.  
+		The directory where the snapshot isstored.  
+		</description>
+	</property>
+	<property>
+		<name>hbase.master.info.port</name>
+		<value>60010</value>
+	</property>
+	<property>
+		<name>hbase.regionserver.handler.count</name>
+		<value>100</value>
+	</property>
+	<!-- 客户端查询缓存cell个数  -->
+	<property>
+		<name>hbase.client.scanner.caching</name>
+		<value>60000</value>
+	</property>
+	<!-- 是否允许并发操作dfs文件  -->
+	<property>
+		<name>dfs.support.append</name>
+		<value>true</value>
+	</property>
+	<!-- rpc引擎  -->
+	<property>
+		<name>hbase.rpc.engine</name>
+		<value>org.apache.hadoop.hbase.ipc.SecureRpcEngine</value>
+	</property>
+	<!-- 禁止离线批量提交  -->
+	<property>
+		<name>hbase.abort.disconected.batchmutate</name>
+		<value>true</value>
+	</property>
+	<!-- 复杂均衡检测，默认5分钟  -->
+	<property>
+		<name>hbase.balancer.period</name>
+		<value>300000</value>
+	</property>
+	<!-- 负载均衡的区间范围控制项  -->
+	<property>
+		<name>hbase.regions.slop</name>
+		<value>0</value>
+	</property>
+	<!-- 定时major compact  -->
+	<property>
+		<name>hbase.hregion.majorcompaction.cron</name>
+		<value>0 0 1 * * ?</value>
+	</property>
+	<!-- 单个ColumnFamily的region大小，若按照ConstantSizeRegionSplitPolicy策略，超过设置的该值则自动split   线上配置：107374182400（100G）  默认配置：21474836480（20G）  -->
+	<property>
+		<name>hbase.hregion.max.filesize</name>
+		<value>107374182400</value>
+	</property>
+	<!-- memstore大小，当达到该值则会flush到外存设备  线上配置：104857600（100M)    默认值： 134217728（128M）  -->
+	<property>
+		<name>hbase.hregion.memstore.flush.size</name>
+		<value>67108864</value>
+	</property>
+	<!-- 开启MSALB 减少内存full gc  -->
+	<property>
+		<name>hbase.hregion.memstore.mslab.enabled</name>
+		<value>true</value>
+	</property>
+	<!-- RegionServer进程触发flush的一个条件：该节点上所有region的memstore之和达到lowerLimit*heapsize  线上配置：0.4   默认配置：0.35  -->
+	<property>
+		<name>hbase.regionserver.global.memstore.lowerLimit</name>
+		<value>0.4</value>
+	</property>
+	<!-- 是否忽略失效的主节点  -->
+	<property>
+		<name>hbase.partition.ignore.unavailable.cluster</name>
+		<value>false</value>
+	</property>
+	<!-- RegionServers受理的RPC Server实例数量。对于Master来说，这个属性是Master受理的handler数量  -->
+	<property>
+		<name>hbase.regionserver.handler.count</name>
+		<value>100</value>
+	</property>
+	<!-- 协处理器线程数  -->
+	<property>
+		<name>hbase.regionserver.coprocessorhandler.count</name>
+		<value>100</value>
+	</property>
+	<!-- 分配给HFile/StoreFile的block cache占最大堆(-Xmx setting)的比例。默认0.25意思是分配25%  -->
+	<property>
+		<name>hfile.block.cache.size</name>
+		<value>0.3</value>
+	</property>
+	<!--  regionServer多少毫秒不心跳则认为它挂了  -->
+	<property>
+		<name>hbase.client.scanner.timeout.period</name>
+		<value>600000</value>
+	</property>
+	<!--  rpc超时时间：毫秒数 线上配置：300000（5min） 默认配置：60000（10s）  -->
+	<property>
+		<name>hbase.rpc.timeout</name>
+		<value>300000</value>
+	</property>
+	<!-- 是否使用分区表，如果使用则会使用multi-cluster  -->
+	<property>
+		<name>hbase.use.partition.table</name>
+		<value>false</value>
+	</property>
+	<!--  zookeeper允许的客户端连接数  -->
+	<property>
+		<name>hbase.zookeeper.property.maxClientCnxns</name>
+		<value>2000</value>
+	</property>
+	<!--  hfile索引目录  -->
+	<property>
+		<name>hregion.index.path</name>
+		<value>hdfs://mycluster/hbase/index</value>
+	</property>
+	<!-- 如果任意store中超过这个多个数的store file,则暂停更新操作直到compact完成，或者达到hbase.hstore.blockingWaitTime设置的等待时间 线上配置：100（生产环境可以设置得很大）  默认配置： 7  -->
+	<property>
+		<name>hbase.hstore.blockingStoreFiles</name>
+		<value>10000000</value>
+	</property>
+	<!--  单次minor compact最多的文件个数   线上配置：30  默认配置：10  -->
+	<property>
+		<name>hbase.hstore.compaction.max</name>
+		<value>30</value>
+	</property>
+	<!-- 超过memstore大小的倍数达到该值则block所有写入请求，自我保护  线上配置：8（内存够大可以适当调大一些，出现这种情况需要客户端做调整）  默认配置：2  -->
+	<property>
+		<name>hbase.hregion.memstore.block.multiplier</name>
+		<value>8</value>
+	</property>
+	<!-- regionserver的hlog数量  线上配置：128  默认配置：32   -->
+	<property>
+		<name>hbase.regionserver.maxlogs</name>
+		<value>128</value>
+	</property>
+	<!-- hlog大小上限，达到该值则block，进行roll掉(将对应的memstore数据刷入磁盘) 线上配置：536870912（512M） 默认配置：hdfs配置的block大小  -->
+	<property>
+		<name>hbase.regionserver.hlog.blocksize</name>
+		<value>536870912</value>
+	</property>
+	<!--  large compact线程池的线程个数  线上配置：5  默认配置：1  -->
+	<property>
+		<name>hbase.regionserver.thread.compaction.large</name>
+		<value>20</value>
+	</property>
+	<!-- small compact线程池的线程个数   线上配置：5  默认配置：1  -->
+	<property>
+		<name>hbase.regionserver.thread.compaction.small</name>
+		<value>20</value>
+	</property>
+	<!-- compact（major和minor）请求进入large和small compact线程池的临界点  线上配置：10737418240（10G）  默认配置：2 * this.minFilesToCompact * this.region.memstoreFlushSize  -->
+	<property>
+		<name>hbase.regionserver.thread.compaction.throttle</name>
+		<value>10737418240</value>
+	</property>
+	<!-- minor compact队列中storefile文件最大size  线上配置：21474836480（20G）  默认配置：Long.MAX_VALUE -->
+	<property>
+		<name>hbase.hstore.compaction.max.size</name>
+		<value>21474836480</value>
+	</property>
+	<!-- split操作默认的策略  线上配置： org.apache.hadoop.hbase.regionserver.ConstantSizeRegionSplitPolicy（采取老的策略，自己控制split）   默认配置： org.apache.hadoop.hbase.regionserver.IncreasingToUpperBoundRegionSplitPolicy（在region没有达到maxFileSize的前提下，如果fileSize达到regionCount * regionCount * flushSize则进行split操作）   -->
+	<property>
+		<name>hbase.regionserver.region.split.policy</name>
+		<value>org.apache.hadoop.hbase.regionserver.ConstantSizeRegionSplitPolicy</value>
+	</property>
+	<!--  单台RegionServer上region数上限  线上配置：150  默认配置：2147483647  -->
+	<property>
+		<name>hbase.regionserver.regionSplitLimit</name>
+		<value>150</value>
+	</property>
+	<!--
+	<property>
+		<name>hbase.coprocessor.user.region.classes</name>
+		<value>com.netposa.dw.hbase.ESProcessObserver</value>
+	</property>
+	-->
+</configuration>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tabledef>
+	<table>
+		<name>traffic_roadmonitor</name>
+		<desc>卡口表的表名称</desc>
+	</table>
+	<fields>
+		<checkpoint>
+			<field>ID_</field>
+			<desc>卡口编码字段名称(与过车记录中的卡口编码对应),字段不能为空</desc>
+		</checkpoint>
+		<orgid>
+			<field>ORGUNITID_</field>
+			<desc>卡口对应的组织机构字段名称(通过卡口编码需要能正确确定到的布控区域),字段不能为空</desc>
+		</orgid>
+		<longitude>
+			<field>X_</field>
+			<desc>卡口X坐标字段名称,字段不能为空</desc>
+		</longitude>
+		<latitude>
+			<field>Y_</field>
+			<desc>卡口Y坐标字段名称,字段不能为空</desc>
+		</latitude>
+	</fields>
+	<connection>
+		<driverClass>com.mysql.jdbc.Driver</driverClass>
+		<url>jdbc:mysql://192.168.60.203:3306/pvd_vmc?useUnicode=true&amp;characterEncoding=utf8</url>
+		<user>root</user>
+		<password>123456</password>
+	</connection>
+</tabledef>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tabledef>
+	<table>
+		<name>sjkk_gcjl_zfyc</name>
+		<desc>昼伏夜出结果输出表的表名称</desc>
+	</table>
+	<fields>
+		<record_id>
+			<field>zfycbh</field>
+			<desc>表主键字段名称</desc>
+		</record_id>
+		<record_date>
+			<field>zfycrq</field>
+			<desc>执行昼伏夜出分析日期的前一天</desc>
+		</record_date>
+		<record_type>
+			<field>zfycsj</field>
+			<desc>分析出的昼伏夜出的小时范围的字符串表示,如17点到4点,表示为1704</desc>
+		</record_type>
+		<carnum>
+			<field>hphm</field>
+			<desc>车牌号码的字段名称</desc>
+		</carnum>
+		<carnum_color>
+			<field>hpys</field>
+			<desc>车牌颜色的字段名称</desc>
+		</carnum_color>
+		<traffic_count>
+			<field>zfyccs</field>
+			<desc>夜间共出现的次数</desc>
+		</traffic_count>
+		<import_time>
+			<field>gxsj</field>
+			<desc>最后一次入库时间字段名称</desc>
+		</import_time>
+	</fields>
+	<connection>
+		<driver_class>com.mysql.jdbc.Driver</driver_class>
+		<url>jdbc:mysql://192.168.60.221:3306/bigdatatest?useUnicode=true&amp;characterEncoding=utf8</url>
+		<user>root</user>
+		<password>null</password>
+	</connection>
+</tabledef>

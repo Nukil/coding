@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.nukil</groupId>
+    <artifactId>coding</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>kafka_consumer_8</module>
+        <module>kafka_consumer_10</module>
+        <module>volume_flow</module>
+        <module>bytes_parse_util</module>
+        <module>fackcar</module>
+        <module>blacklist</module>
+        <module>night_travel</module>
+        <module>auxiliay_retirval</module>
+        <module>face_comparsion</module>
+        <module>face_comparsion_cpp</module>
+        <module>human_comparsion</module>
+        <module>human_comparsion_cpp</module>
+        <module>face_library_comparsion</module>
+        <module>face_library_comparsion_cpp</module>
+    </modules>
+
+
+</project>

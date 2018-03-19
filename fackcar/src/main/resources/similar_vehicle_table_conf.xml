@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tabledef>
+	<table>
+		<name>SIMILAR_VEHICLE</name>
+		<desc>套牌找原车</desc>
+	</table>
+	<fields>
+		<firstTrafficId>
+	    	<field>FGCBH_</field>
+	    	<desc>第一条过车记录的记录编码字段名称</desc>
+	    </firstTrafficId>
+	    <firstSimilarTrafficId>
+	    	<field>FSGCBHS_</field>
+	    	<desc>第一条过车记录的相似过车记录ids</desc>
+	    </firstSimilarTrafficId>
+	    <secondTrafficId>
+	    	<field>SGCBH_</field>
+	    	<desc>第二条过车记录的记录编码字段名称</desc>
+	    </secondTrafficId>
+	    <secondSimilarTrafficId>
+	    	<field>SSGCBHS_</field>
+	    	<desc>第二条过车记录的相似过车记录ids</desc>
+	    </secondSimilarTrafficId>
+	</fields>
+	<connection>
+		<driverClass>com.mysql.jdbc.Driver</driverClass>
+		<url>jdbc:mysql://192.168.62.207:3306/pvd_vmc?useUnicode=true&amp;characterEncoding=utf8</url>
+		<user>mysql</user>
+		<password>123456</password>
+	</connection>
+</tabledef>

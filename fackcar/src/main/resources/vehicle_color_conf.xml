@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VehicleColor>
+    <filed pcc="-1" vim="Z" pcc_des="未知" vim_des="其他"/>
+    <filed pcc="0" vim="A" pcc_des="白色" vim_des="白"/> 
+    <filed pcc="1" vim="B" pcc_des="灰（银）色" vim_des="灰"/> 
+    <filed pcc="2" vim="C" pcc_des="黄色" vim_des="黄"/> 
+    <filed pcc="3" vim="D" pcc_des="粉色" vim_des="粉"/> 
+    <filed pcc="4" vim="E" pcc_des="红色" vim_des="红"/>
+    <filed pcc="5" vim="G" pcc_des="绿色" vim_des="绿"/>
+    <filed pcc="6" vim="H" pcc_des="蓝色" vim_des="蓝"/> 
+    <filed pcc="7" vim="I" pcc_des="棕色" vim_des="棕"/> 
+    <filed pcc="8" vim="J" pcc_des="黑色" vim_des="黑"/> 
+    <filed pcc="9" vim="F" pcc_des="紫色" vim_des="紫"/> 
+</VehicleColor>

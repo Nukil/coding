@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+	<property>
+		<name>hadoop.tmp.dir</name>
+		<value>/home/bigdata/poseidon_1.2/compenents/hadoop-2.7.1/tmp</value>
+	</property>
+	<property>
+		<name>fs.default.name</name>
+		<value>hdfs://192.168.62.207:9000</value>
+	</property>
+	<property>
+		<name>fs.trash.interval</name>
+		<value>1440</value>
+		<description>默认值： 0  这个是开启hdfs文件删除自动转移到垃圾箱的选项，值为垃圾箱文件清除时间。一般开启这个会比较好，以防错误删除重要文件。单位是分钟</description>
+	</property>
+	<property>
+		<name>io.file.buffer.size</name>
+		<value>10485760</value>
+		<description>默认值：4096 SequenceFiles在读写中可以使用的缓存大小，可减少 I/O 次数。在大型的 Hadoop cluster，建议可设定为 65536 到 131072</description>
+	</property>
+	<property>
+		<name>io.compression.codecs</name>
+		<value>org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.BZip2Codec,org.apache.hadoop.io.compress.SnappyCodec</value>
+	</property>
+</configuration>

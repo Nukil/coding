@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tabledef>
+	<table>
+		<name>sjkk_gcjl</name>
+		<desc>过车记录的表名称</desc>
+	</table>
+	<fields>
+		<traffic_time>
+			<field>jgsj</field>
+			<desc>过车时间字段名称</desc>
+		</traffic_time>
+		<import_time>
+			<field>rksj</field>
+			<desc>入库时间字段名称</desc>
+		</import_time>
+		<plate_num>
+			<field>hphm</field>
+			<desc>过车记录中车牌号码的字段名称</desc>
+		</plate_num>
+		<platenum_color>
+			<field>hpys</field>
+			<desc>过车记录中车牌颜色的字段名称</desc>
+		</platenum_color>
+	</fields>
+	<connection>
+		<driver_class>com.mysql.jdbc.Driver</driver_class>
+		<url>jdbc:mysql://192.168.60.159:3309/shanghai?useUnicode=true&amp;characterEncoding=utf8</url>
+		<user>root</user>
+		<password>null</password>
+	</connection>
+</tabledef>
