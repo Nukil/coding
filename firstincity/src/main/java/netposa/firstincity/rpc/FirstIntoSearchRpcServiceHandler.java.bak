@@ -1,0 +1,267 @@
+package netposa.firstincity.rpc;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import netposa.firstincity.analysis.server.BloomFilterUtils;
+import netposa.firstincity.bloom.util.ByteBloomFilter;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class FirstIntoSearchRpcServiceHandler implements
+		FisrtIntoSearchRpcService.Iface {
+	private static final Logger LOG = LoggerFactory.getLogger(FirstIntoSearchRpcServiceHandler.class);
+	
+	private Charset charset = Charset.forName("utf-8");
+	private Lock lock = new ReentrantLock();
+	
+	private String dumpFileName = "ONEDAY.tmp";
+
+	// 因为首次汝城分析为离线分析，所以要记录一天当中已经调用此接口判断过的首次入城
+	private Map<String, Byte> ONEDAY_FLAG = new HashMap<String, Byte>();
+
+	// 定时加载任务的执行周期
+	private static final long PERIOD_DAY = 24 * 60 * 60 * 1000;
+	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	// 配置信息
+	private Properties props;
+
+	private String dateStr;
+	private BloomFilterUtils utils;
+
+	private Integer[] ruleIds;
+
+	private Timer timer = new Timer();
+	private int lastSize = 0;
+
+	public FirstIntoSearchRpcServiceHandler(Properties props) {
+		this.props = props;
+		this.dateStr = getCurrentDateStr();
+		this.utils = new BloomFilterUtils(props, dateStr);
+		String[] tmps = StringUtils.trimToEmpty(
+				props.getProperty("filter.rule.ids", "1,3,6")).split(",");
+		ruleIds = new Integer[tmps.length];
+		int index = 0;
+		for (String str : tmps) {
+			ruleIds[index] = Integer.valueOf(str);
+			index++;
+		}
+		loadDumpFile();
+		startTimerTask();
+		startDumpTask();
+	}
+
+	@Override
+	public Map<Integer, Boolean> judgeFirstInto(InputRecord record)
+			throws TException {
+		byte[] hphm_hpys = getPlateAndColor(record.getLicence_plate(),
+				record.getLicence_plate_color());
+		String key = new String(hphm_hpys, charset);
+		LOG.info("judge firstinto hphm+hpys=" + key);
+		Map<Integer, Boolean> resultMap = new HashMap<Integer, Boolean>();
+		for (Integer ruleId : ruleIds) {
+			resultMap.put(ruleId, false);
+		}
+		if (ONEDAY_FLAG.containsKey(key)) {
+			LOG.info("ONEDAY FLAG is true, call return!");
+			return resultMap;
+		}
+		ONEDAY_FLAG.put(key, (byte) 1);
+		
+		Map<Integer, ByteBloomFilter> filters = utils.getRuleFilters();
+		for (Integer ruleId : ruleIds) {
+			ByteBloomFilter filter = filters.get(ruleId * 30);
+			if (null != filter) {
+				boolean flag = filter.contains(hphm_hpys, 0,
+						hphm_hpys.length, null);
+				if (!flag) {
+					LOG.info("judge firstinto ruleId=" + ruleId + " is true!");
+					resultMap.put(ruleId, true);
+				}
+			}
+		}
+		return resultMap;
+	}
+
+	private byte[] getPlateAndColor(byte[] hphm, byte[] hpys) {
+		byte[] hphm_hpys = new byte[hphm.length + hpys.length];
+		System.arraycopy(hphm, 0, hphm_hpys, 0, hphm.length);
+		System.arraycopy(hpys, 0, hphm_hpys, hphm.length, hpys.length);
+		return hphm_hpys;
+	}
+
+	private String getCurrentDateStr() {
+		return sdf.format(new Date());
+	}
+
+	private void startTimerTask() {
+		String delay_time_str = props.getProperty("timer.dispatcher.times",
+				"2:00");
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.HOUR_OF_DAY,
+				Integer.valueOf(delay_time_str.split(":")[0]) + 1);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		Date date = calendar.getTime(); // 第一次执行定时任务的时间
+		// 如果第一次执行定时任务的时间 小于当前的时间
+		// 此时要在 第一次执行定时任务的时间加一天，以便此任务在下个时间点执行。如果不加一天，任务会立即执行。
+		if (date.before(new Date())) {
+			date = this.addDay(date, 1);
+		}
+		// 安排指定的任务在指定的时间开始进行重复的固定延迟执行。
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				String currentDate = getCurrentDateStr();
+				if (!dateStr.equals(currentDate)) {
+					try {
+						lock.lock();
+						if (!dateStr.equals(currentDate)) {
+							utils = new BloomFilterUtils(props, currentDate);
+							dateStr = currentDate;
+							ONEDAY_FLAG.clear();
+							lastSize = 0;
+						}
+					} finally {
+						lock.unlock();
+					}
+				}
+			}
+		}, date, PERIOD_DAY);
+	}
+
+	// 增加或减少天数
+	private Date addDay(Date date, int num) {
+		Calendar startDT = Calendar.getInstance();
+		startDT.setTime(date);
+		startDT.add(Calendar.DAY_OF_MONTH, num);
+		return startDT.getTime();
+	}
+
+	private void startDumpTask() {
+		// 安排指定的任务在指定的时间开始进行重复的固定延迟执行。
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				if(lastSize < ONEDAY_FLAG.size()) {
+					LOG.debug("dump start……");
+					
+					File tmpFile = new File(dumpFileName);
+					FileOutputStream fos = null;
+				    FileChannel fc_out = null;
+					ByteArrayOutputStream bo = null;
+				    ObjectOutputStream oo = null;
+					try {
+						bo = new ByteArrayOutputStream();
+				        oo = new ObjectOutputStream(bo);
+				        oo.writeObject(ONEDAY_FLAG);
+				        byte[] bts = bo.toByteArray();
+				  
+						fos = new FileOutputStream(tmpFile);
+						fc_out = fos.getChannel();
+						ByteBuffer buf = ByteBuffer.wrap(bts);
+						fc_out.write(buf);
+						fos.flush();
+						fc_out.force(true);
+					} catch (IOException e) {
+						e.printStackTrace();
+					} finally {
+						if (null != fc_out) {
+							try {
+								fc_out.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+						if (null != fos) {
+							try {
+								fos.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+						if(oo != null) {
+							try {
+								oo.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+						if(bo != null) {
+							try {
+								bo.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+					
+					lastSize = ONEDAY_FLAG.size();
+				}
+			}
+		}, 60000, 60000);
+	}
+	
+	private void loadDumpFile() {
+		File tmpFile = new File(dumpFileName);
+		if(tmpFile.exists()) {
+			LOG.debug("read dump file……");
+			FileInputStream fis = null;
+			ObjectInputStream oo = null;
+			try {
+				fis = new FileInputStream(tmpFile);
+		        oo = new ObjectInputStream(fis);
+		        Object obj = oo.readObject();
+		        if(obj != null) {
+		        	ONEDAY_FLAG = (Map<String, Byte>)obj;
+		        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} finally {
+				if(oo != null) {
+					try {
+						oo.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				if(fis != null) {
+					try {
+						fis.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			lastSize = ONEDAY_FLAG.size();
+		}
+	}
+}

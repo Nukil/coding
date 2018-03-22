@@ -23,6 +23,9 @@
         <module>human_comparsion_cpp</module>
         <module>face_library_comparsion</module>
         <module>face_library_comparsion_cpp</module>
+        <module>fackcar_spark</module>
+        <module>night_travel_spark</module>
+        <module>firstincity</module>
     </modules>
 
 
